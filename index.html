@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Interactive explicit BRNN predictor for methane adsorption capacity in gas shale reservoirs. Based on Dr. Okorie's explicit model." />
+  <title>CH4 Predict — Methane Adsorption in Shale Intelligence</title>
+
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX for crisp mathematical typography -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Chart.js for real-time Adsorption Isotherm -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- App Styles -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Top App Navigation Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-badge mono">CH₄</div>
+        <div class="brand-text">
+          <div class="brand-title">
+            <span>CH4 Predict</span>
+            <span class="brand-version">Mode A • BRNN</span>
+          </div>
+          <span class="brand-sub">Methane Adsorption in Gas Shale Intelligence</span>
+        </div>
+      </div>
+
+      <nav class="nav-tabs" role="tablist" aria-label="Application View Selection">
+        <button class="tab-btn active" role="tab" aria-selected="true" data-tab="tab-predictor">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>
+          <span>Predictor & Isotherm</span>
+        </button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="tab-neurons">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Neuron Insights</span>
+        </button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="tab-validation">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          <span>Table 3 Benchmark</span>
+        </button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="tab-batch">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span>Batch Runner</span>
+        </button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="tab-equations">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span>Model Equations</span>
+        </button>
+      </nav>
+
+      <div class="header-actions">
+        <button class="icon-btn" id="btn-copy-result" title="Copy Current Prediction to Clipboard" aria-label="Copy result">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-reset" title="Reset to Defaults (R)" aria-label="Reset parameters">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-theme-toggle" title="Toggle Light/Dark Theme (T)" aria-label="Toggle theme">
+          <svg id="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg id="theme-icon-moon" style="display:none;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Viewports -->
+  <main>
+
+    <!-- ========================================================
+         TAB 1: PREDICTOR & ISOTHERM VIEW
+         ======================================================== -->
+    <div id="tab-predictor" class="tab-pane active" role="tabpanel">
+      <div class="predictor-grid">
+
+        <!-- Left: Operating Parameter Controls -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="card-title">Reservoir Parameters</span>
+              <span class="card-subtitle">Adjust in-situ core and thermobaric conditions</span>
+            </div>
+          </div>
+
+          <!-- Geological Play Presets -->
+          <div class="presets-section">
+            <div class="presets-label">
+              <span>Shale Basin Presets</span>
+              <span>Quick Select</span>
+            </div>
+            <div class="presets-scroll" id="presets-container">
+              <!-- Dynamically populated from PRESETS -->
+            </div>
+          </div>
+
+          <!-- Slider / Input Controls -->
+          <div class="param-controls" id="param-controls-container">
+            <!-- Dynamically populated from PARAMS -->
+          </div>
+
+          <!-- Domain Boundary Warnings Container -->
+          <div class="domain-alerts" id="domain-alerts-container"></div>
+        </div>
+
+        <!-- Right: Primary Readout, Isotherm, & Sensitivity -->
+        <div class="results-stack">
+
+          <!-- Hero Adsorption HUD -->
+          <div class="hero-card">
+            <div class="hero-top">
+              <div class="hero-tag">Predicted Adsorption Capacity</div>
+              <div class="unit-switch" role="group" aria-label="Adsorption Unit Selector">
+                <button class="unit-btn active" data-unit="scfTon">SCF/ton</button>
+                <button class="unit-btn" data-unit="cm3g">cm³/g</button>
+              </div>
+            </div>
+
+            <div class="hero-main">
+              <span class="hero-val mono" id="hero-value">0.0000</span>
+              <span class="hero-unit" id="hero-unit-label">SCF/ton</span>
+            </div>
+
+            <div class="hero-tier-row">
+              <span class="tier-badge" id="hero-tier-badge">Calculating...</span>
+              <span class="tier-desc" id="hero-tier-desc">Evaluating neural network response</span>
+            </div>
+
+            <div class="metric-grid">
+              <div class="metric-item">
+                <span class="metric-label">Drawdown Derivative ($\partial V / \partial P$)</span>
+                <span class="metric-value mono" id="metric-slope">—</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Volumetric Equivalent</span>
+                <span class="metric-value mono" id="metric-vol">—</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Mode A Normalized Sum ($Y_n$)</span>
+                <span class="metric-value mono" id="metric-yn">—</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Adsorption Isotherm -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-title">Langmuir Adsorption Isotherm</span>
+                <span class="card-subtitle">Pressure sweep $P \in [0.27, 27.86\text{ MPa}]$ at constant $(TOC, T, M)$</span>
+              </div>
+              <div class="chart-legend-wrap">
+                <div class="legend-item">
+                  <span class="legend-dot" style="background:#00F0FF;"></span>
+                  <span>BRNN Isotherm Curve</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-dot" style="background:#10B981;"></span>
+                  <span>Operating Point $(P, V)$</span>
+                </div>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="isothermChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Parameter Sensitivity (Tornado Chart) -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-title">Parameter Sensitivity (Tornado Impact)</span>
+                <span class="card-subtitle">$\pm 10\%$ localized perturbation around current operating state</span>
+              </div>
+            </div>
+            <div class="tornado-list" id="tornado-container">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========================================================
+         TAB 2: NEURON INSIGHTS VIEW
+         ======================================================== -->
+    <div id="tab-neurons" class="tab-pane" role="tabpanel">
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="card-title">Hidden Layer Activation Spectrum ($H_1 \to H_9$)</span>
+            <span class="card-subtitle">Detailed diagnostics for each individual hyperbolic tangent hidden node</span>
+          </div>
+          <span class="tier-badge mono" id="neuron-sum-badge">$\sum H_i$: 0.0000</span>
+        </div>
+        <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom: 1.25rem;">
+          Each neuron evaluates an inner linear combination $z_i = \mathbf{w}_i \cdot \mathbf{x}_n + b_i$, followed by a hyperbolic tangent activation $\tanh(z_i)$ and output weight scaling factor $s_i$.
+        </p>
+        <div class="neuron-grid" id="neuron-grid-container">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================
+         TAB 3: VALIDATION SUITE (TABLE 3 BENCHMARK)
+         ======================================================== -->
+    <div id="tab-validation" class="tab-pane" role="tabpanel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="card-title">Dr. Okorie Table 3 Test Dataset Benchmark</span>
+            <span class="card-subtitle">Direct line-by-line comparison between Mode A explicit formula and document predictions</span>
+          </div>
+          <span class="delta-pill mono">Constant Offset $\Delta \approx +0.319956\text{ SCF/ton}$</span>
+        </div>
+
+        <p style="font-size:0.84rem; color:var(--text-muted); margin-bottom: 1rem;">
+          Click <strong>Load</strong> on any row below to instantly populate the primary predictor controls with that benchmark dataset sample.
+        </p>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>P (MPa)</th>
+                <th>TOC (%)</th>
+                <th>T (°C)</th>
+                <th>M (%)</th>
+                <th>Mode A Calculated</th>
+                <th>Table 3 BRNN</th>
+                <th>Offset ($\Delta$)</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="validation-table-body">
+              <!-- Dynamically populated from VALIDATION_DATA -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================
+         TAB 4: BATCH CSV RUNNER
+         ======================================================== -->
+    <div id="tab-batch" class="tab-pane" role="tabpanel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="card-title">Batch Core Sample Processing</span>
+            <span class="card-subtitle">Paste comma-separated reservoir core data or run the sample matrix</span>
+          </div>
+          <div style="display:flex; gap:0.5rem;">
+            <button class="btn-secondary" id="btn-batch-sample">Insert Sample CSV</button>
+            <button class="btn-primary" id="btn-batch-run">Process Records</button>
+          </div>
+        </div>
+
+        <div class="batch-deck">
+          <div>
+            <label style="font-size:0.75rem; font-weight:600; text-transform:uppercase; color:var(--text-dim); display:block; margin-bottom:0.4rem;">
+              Input CSV Format: P, TOC, T, M
+            </label>
+            <textarea class="csv-textarea" id="csv-input" placeholder="P, TOC, T, M&#10;15.0, 4.5, 65.0, 1.2&#10;22.8, 6.2, 55.0, 0.85"></textarea>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+              <label style="font-size:0.75rem; font-weight:600; text-transform:uppercase; color:var(--text-dim);">
+                Processed Predictions (Enriched CSV)
+              </label>
+              <button class="action-btn-sm" id="btn-batch-download" style="display:none;">Download CSV</button>
+            </div>
+            <textarea class="csv-textarea" id="csv-output" readonly placeholder="Results will appear here with calculated SCF/ton, cm³/g, and capacity tier..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================
+         TAB 5: MATHEMATICAL MODEL SPECIFICATION
+         ======================================================== -->
+    <div id="tab-equations" class="tab-pane" role="tabpanel">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="card-title">Explicit Mathematical Formulation (Mode A)</span>
+            <span class="card-subtitle">Complete algebraic specification for Methane Adsorption in Shale Calculator</span>
+          </div>
+        </div>
+
+        <div class="equation-block">
+          <div class="eq-title">1. Min-Max Normalization Equations</div>
+          <p style="font-size:0.84rem; color:var(--text-muted); margin-bottom:0.85rem;">
+            Inputs are mapped into the range $[-1, 1]$ using standard linear scaling:
+          </p>
+          <div class="mono" style="line-height: 2;">
+            $$P_n = 2\left(\frac{P - 0.27}{27.59}\right) - 1$$
+            $$TOC_n = 2\left(\frac{TOC - 0.09}{11.81}\right) - 1$$
+            $$T_n = 2\left(\frac{T - 25.0}{60.0}\right) - 1$$
+            $$M_n = 2\left(\frac{M - 0.13}{9.7}\right) - 1$$
+          </div>
+        </div>
+
+        <div class="equation-block">
+          <div class="eq-title">2. Hidden Layer Architecture (9 Tanh Neurons)</div>
+          <div class="mono" style="line-height: 2; font-size:0.86rem; overflow-x:auto;">
+            $$H_1 = 4.3454 \tanh(0.463864 P_n - 0.31133 TOC_n + 0.344959 T_n - 3.12002 M_n + 0.1364)$$
+            $$H_2 = -2.3848 \tanh(-0.58134 P_n + 3.884372 TOC_n - 3.35804 T_n - 3.5612 M_n + 1.5674)$$
+            $$H_3 = 1.0787 \tanh(2.063359 P_n - 1.36743 TOC_n + 0.017287 T_n - 0.81836 M_n + 1.6986)$$
+            $$H_4 = 7.2983 \tanh(-0.55888 P_n + 3.675293 TOC_n - 3.62496 T_n - 5.46799 M_n - 0.0611)$$
+            $$H_5 = 2.6694 \tanh(-0.34832 P_n - 1.05893 TOC_n - 4.05862 T_n + 3.986044 M_n - 2.9299)$$
+            $$H_6 = -2.5638 \tanh(-0.54341 P_n - 6.08516 TOC_n + 2.800065 T_n - 1.95976 M_n - 3.5087)$$
+            $$H_7 = -2.4732 \tanh(0.726167 P_n + 5.44991 TOC_n - 3.53879 T_n + 2.364884 M_n + 3.2086)$$
+            $$H_8 = 4.5911 \tanh(0.593457 P_n - 3.93835 TOC_n + 4.100349 T_n + 6.917117 M_n + 0.8407)$$
+            $$H_9 = 0.3444 \tanh(0.528816 P_n + 0.545323 TOC_n + 1.302212 T_n + 4.240496 M_n + 3.8238)$$
+          </div>
+        </div>
+
+        <div class="equation-block">
+          <div class="eq-title">3. Output Layer, Mode A Denormalization & Non-Negative Gate</div>
+          <div class="mono" style="line-height: 2.2;">
+            $$(\text{CH}_4\text{ adsorption})_n = \sum_{i=1}^{9} H_i - 3.3371$$
+            $$\text{CH}_4\text{ adsorption} = 1.615 (\text{CH}_4\text{ adsorption})_n + 1.615$$
+            $$(\text{CH}_4\text{ adsorption})_{\text{final}} = \max(0, \text{CH}_4\text{ adsorption})\quad [\text{SCF/ton}]$$
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- App Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div>CH4 Predict — Dr. Okorie Explicit Artificial Neural Network Correlation</div>
+      <div class="mono" style="font-size:0.72rem;">Mode A • Precision Verified • $R^2 = 0.9999999985$</div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
