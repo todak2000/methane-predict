@@ -18,6 +18,18 @@ const row1 = engine.predict(0.43, 1.11, 70.0, 1.24);
 console.log('Row 1 Mode A prediction:', row1.scfTon.toFixed(8), 'SCF/ton');
 assert(Math.abs(row1.scfTon - 0.35725314) < 1e-6, 'Row 1 Mode A calculation matches explicit formula');
 assert(row1.neuronDetails.length === 9, 'All 9 hidden neurons evaluated');
+
+// Test 2B: Predictive Quantiles (P10, P50, P90)
+const q = row1.quantiles;
+assert(q && q.p10 && q.p50 && q.p90, 'Quantiles object exists');
+const expectedP10 = Math.max(0, 0.35725314 - 0.052685);
+const expectedP50 = Math.max(0, 0.35725314 + 0.000445);
+const expectedP90 = Math.max(0, 0.35725314 + 0.0332);
+assert(Math.abs(q.p10.scfTon - expectedP10) < 1e-6, 'P10 calculation matches formula');
+assert(Math.abs(q.p50.scfTon - expectedP50) < 1e-6, 'P50 calculation matches formula');
+assert(Math.abs(q.p90.scfTon - expectedP90) < 1e-6, 'P90 calculation matches formula');
+assert(q.p10.scfTon <= q.p50.scfTon && q.p50.scfTon <= q.p90.scfTon, 'Ordering condition P10 <= P50 <= P90 holds');
+console.log(`✓ Quantiles verified: P10=${q.p10.scfTon.toFixed(5)}, P50=${q.p50.scfTon.toFixed(5)}, P90=${q.p90.scfTon.toFixed(5)}`);
 console.log('✓ Mode A explicit formula prediction verified');
 
 // Test 3: Non-Negative Gate

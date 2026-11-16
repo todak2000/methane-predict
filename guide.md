@@ -60,6 +60,11 @@ $$(\text{CH}_4\text{ adsorption})_n = \sum_{i=1}^{9} H_i - 3.3371$$
 $$\text{CH}_4\text{ adsorption} = 1.615 (\text{CH}_4\text{ adsorption})_n + 1.615$$
 $$(\text{CH}_4\text{ adsorption})_{\text{final}} = \max(0, \text{CH}_4\text{ adsorption})\quad [\text{SCF/ton}]$$
 
+### 3.4 Residual Quantiles & Predictive Uncertainty Bounds
+$$P_{10} = \max(0, \text{CH}_4\text{ adsorption}_{(BRNN)} - 0.052685)\quad [\text{SCF/ton}]$$
+$$P_{50} = \max(0, \text{CH}_4\text{ adsorption}_{(BRNN)} + 0.000445)\quad [\text{SCF/ton}]$$
+$$P_{90} = \max(0, \text{CH}_4\text{ adsorption}_{(BRNN)} + 0.0332)\quad [\text{SCF/ton}]$$
+
 ---
 
 ## 4. Key Features & Interface Capabilities

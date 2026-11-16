@@ -80,6 +80,11 @@ const OUTPUT_BIAS_NORM = -3.3371;
 const DENORM_SLOPE     =  1.6150;
 const DENORM_INTERCEPT =  1.6150;
 
+// Residual Quantile Offsets for Predictive Uncertainty (Dr. Okorie Model)
+const P10_OFFSET = -0.052685;
+const P50_OFFSET =  0.000445;
+const P90_OFFSET =  0.033200;
+
 // Conversion factor: 1 SCF/ton = 0.03121404 cm³/g (or cc/g)
 const SCF_TO_CM3G = 0.03121404;
 
@@ -240,15 +245,41 @@ function predictCore(P, TOC, T, M) {
 }
 
 /**
- * Full Prediction with diagnostics, tier, and engineering conversions
+ * Full Prediction with diagnostics, tier, predictive quantiles, and engineering conversions
  */
 function predict(P, TOC, T, M) {
   const core = predictCore(P, TOC, T, M);
   const tier = getAdsorptionTier(core.scfTon);
 
+  // Predictive Quantiles (Residual Quantiles from Dr. Okorie Model)
+  const p10_scf = Math.max(0.0, core.scfTon + P10_OFFSET);
+  const p50_scf = Math.max(0.0, core.scfTon + P50_OFFSET);
+  const p90_scf = Math.max(0.0, core.scfTon + P90_OFFSET);
+
+  const quantiles = {
+    p10: {
+      scfTon: p10_scf,
+      cm3g: p10_scf * SCF_TO_CM3G,
+      label: 'P10 (Conservative / 90% Exceedance)'
+    },
+    p50: {
+      scfTon: p50_scf,
+      cm3g: p50_scf * SCF_TO_CM3G,
+      label: 'P50 (Median Expected)'
+    },
+    p90: {
+      scfTon: p90_scf,
+      cm3g: p90_scf * SCF_TO_CM3G,
+      label: 'P90 (Optimistic / Upside)'
+    },
+    spreadScf: p90_scf - p10_scf,
+    spreadCm3g: (p90_scf - p10_scf) * SCF_TO_CM3G
+  };
+
   return {
     ...core,
     tier: tier,
+    quantiles: quantiles,
     units: {
       scfTon: core.scfTon,
       cm3g: core.cm3g,
@@ -270,10 +301,17 @@ function generateIsotherm(TOC, T, M, steps = 60) {
   for (let i = 0; i < steps; i++) {
     const p = pMin + i * stepSize;
     const res = predictCore(p, TOC, T, M);
+    const p10 = Math.max(0.0, res.scfTon + P10_OFFSET);
+    const p90 = Math.max(0.0, res.scfTon + P90_OFFSET);
+
     points.push({
       p: Math.round(p * 100) / 100,
       scfTon: res.scfTon,
-      cm3g: res.cm3g
+      cm3g: res.cm3g,
+      p10Scf: p10,
+      p90Scf: p90,
+      p10Cm3g: p10 * SCF_TO_CM3G,
+      p90Cm3g: p90 * SCF_TO_CM3G
     });
   }
 
@@ -406,6 +444,9 @@ if (typeof module !== 'undefined' && module.exports) {
     OUTPUT_BIAS_NORM,
     DENORM_SLOPE,
     DENORM_INTERCEPT,
+    P10_OFFSET,
+    P50_OFFSET,
+    P90_OFFSET,
     SCF_TO_CM3G,
     PRESETS,
     VALIDATION_DATA,

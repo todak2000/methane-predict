@@ -45,7 +45,20 @@
     csvOutput: document.getElementById('csv-output'),
     batchRunBtn: document.getElementById('btn-batch-run'),
     batchSampleBtn: document.getElementById('btn-batch-sample'),
-    batchDownloadBtn: document.getElementById('btn-batch-download')
+    batchDownloadBtn: document.getElementById('btn-batch-download'),
+    // Predictive Quantiles elements
+    qP10Val: document.getElementById('q-p10-val'),
+    qP10Unit: document.getElementById('q-p10-unit'),
+    qP50Val: document.getElementById('q-p50-val'),
+    qP50Unit: document.getElementById('q-p50-unit'),
+    qP90Val: document.getElementById('q-p90-val'),
+    qP90Unit: document.getElementById('q-p90-unit'),
+    quantilesSpreadTag: document.getElementById('quantiles-spread-tag'),
+    gaugeLabelP10: document.getElementById('gauge-label-p10'),
+    gaugeLabelBrnn: document.getElementById('gauge-label-brnn'),
+    gaugeLabelP90: document.getElementById('gauge-label-p90'),
+    gaugeBand: document.getElementById('gauge-band'),
+    gaugeMarker: document.getElementById('gauge-marker')
   };
 
   // 1. Initialization
@@ -223,7 +236,7 @@
     updateAll();
   }
 
-  // 5. Chart.js Adsorption Isotherm
+  // 5. Chart.js Adsorption Isotherm with Uncertainty Envelope
   function initChart() {
     const ctx = document.getElementById('isothermChart').getContext('2d');
     const isDark = state.theme === 'dark';
@@ -233,23 +246,37 @@
       data: {
         datasets: [
           {
+            label: 'P90 Upper Bound',
+            data: [],
+            borderColor: isDark ? 'rgba(0, 240, 255, 0.40)' : 'rgba(0, 140, 163, 0.40)',
+            borderWidth: 1.2,
+            borderDash: [4, 4],
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            tension: 0.25,
+            fill: false
+          },
+          {
+            label: 'P10 Lower Bound',
+            data: [],
+            borderColor: isDark ? 'rgba(0, 240, 255, 0.40)' : 'rgba(0, 140, 163, 0.40)',
+            borderWidth: 1.2,
+            borderDash: [4, 4],
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            tension: 0.25,
+            fill: '-1',
+            backgroundColor: isDark ? 'rgba(0, 240, 255, 0.08)' : 'rgba(0, 140, 163, 0.08)'
+          },
+          {
             label: 'BRNN Adsorption Isotherm',
             data: [],
             borderColor: '#00F0FF',
-            borderWidth: 2.2,
+            borderWidth: 2.4,
             pointRadius: 0,
             pointHoverRadius: 4,
             tension: 0.25,
-            fill: true,
-            backgroundColor: function (context) {
-              const chart = context.chart;
-              const { ctx, chartArea } = chart;
-              if (!chartArea) return null;
-              const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-              gradient.addColorStop(0, isDark ? 'rgba(0, 240, 255, 0.20)' : 'rgba(0, 140, 163, 0.15)');
-              gradient.addColorStop(1, 'rgba(0, 240, 255, 0.00)');
-              return gradient;
-            }
+            fill: false
           },
           {
             label: 'Operating Point',
@@ -284,7 +311,7 @@
                 const p = context.parsed.x.toFixed(2);
                 const v = context.parsed.y.toFixed(4);
                 const unit = state.selectedUnit === 'scfTon' ? 'SCF/ton' : 'cm³/g';
-                return `P: ${p} MPa | Adsorption: ${v} ${unit}`;
+                return `${context.dataset.label}: ${v} ${unit} at ${p} MPa`;
               }
             }
           }
@@ -328,6 +355,11 @@
     state.chart.options.scales.x.ticks.color = isDark ? '#64748B' : '#64748B';
     state.chart.options.scales.y.ticks.color = isDark ? '#64748B' : '#64748B';
     state.chart.options.scales.y.title.text = state.selectedUnit === 'scfTon' ? 'Adsorption (SCF/ton)' : 'Adsorption (cm³/g)';
+
+    // Update dataset styles
+    state.chart.data.datasets[0].borderColor = isDark ? 'rgba(0, 240, 255, 0.40)' : 'rgba(0, 140, 163, 0.40)';
+    state.chart.data.datasets[1].borderColor = isDark ? 'rgba(0, 240, 255, 0.40)' : 'rgba(0, 140, 163, 0.40)';
+    state.chart.data.datasets[1].backgroundColor = isDark ? 'rgba(0, 240, 255, 0.08)' : 'rgba(0, 140, 163, 0.08)';
   }
 
   // 6. Master Update Loop
@@ -340,22 +372,53 @@
       }
     });
 
-    // 6.2 Compute Core Prediction
+    // 6.2 Compute Core Prediction & Quantiles
     const pred = predict(state.P, state.TOC, state.T, state.M);
+    const unitLabel = state.selectedUnit === 'scfTon' ? 'SCF/ton' : 'cm³/g';
 
     // 6.3 Hero HUD
     const dispVal = state.selectedUnit === 'scfTon' ? pred.scfTon : pred.cm3g;
     els.heroValue.textContent = dispVal.toFixed(4);
-    els.heroUnitLabel.textContent = state.selectedUnit === 'scfTon' ? 'SCF/ton' : 'cm³/g';
+    els.heroUnitLabel.textContent = unitLabel;
 
     els.heroTierBadge.textContent = pred.tier.tier;
     els.heroTierBadge.style.color = pred.tier.color;
     els.heroTierBadge.style.borderColor = pred.tier.color;
     els.heroTierDesc.textContent = pred.tier.desc;
 
-    // 6.4 Additional Engineering Metrics
+    // 6.4 Predictive Quantiles HUD & Credible Interval Gauge
+    const q10 = state.selectedUnit === 'scfTon' ? pred.quantiles.p10.scfTon : pred.quantiles.p10.cm3g;
+    const q50 = state.selectedUnit === 'scfTon' ? pred.quantiles.p50.scfTon : pred.quantiles.p50.cm3g;
+    const q90 = state.selectedUnit === 'scfTon' ? pred.quantiles.p90.scfTon : pred.quantiles.p90.cm3g;
+    const qSpread = state.selectedUnit === 'scfTon' ? pred.quantiles.spreadScf : pred.quantiles.spreadCm3g;
+
+    els.qP10Val.textContent = q10.toFixed(4);
+    els.qP10Unit.textContent = unitLabel;
+    els.qP50Val.textContent = q50.toFixed(4);
+    els.qP50Unit.textContent = unitLabel;
+    els.qP90Val.textContent = q90.toFixed(4);
+    els.qP90Unit.textContent = unitLabel;
+    els.quantilesSpreadTag.textContent = `Spread: ${qSpread.toFixed(4)} ${unitLabel}`;
+
+    // Gauge track calculation
+    const gaugeMin = Math.max(0, q10 - qSpread * 0.25);
+    const gaugeMax = q90 + qSpread * 0.25;
+    const gaugeSpan = Math.max(0.001, gaugeMax - gaugeMin);
+
+    const leftPct = Math.max(0, Math.min(100, ((q10 - gaugeMin) / gaugeSpan) * 100));
+    const rightPct = Math.max(0, Math.min(100, 100 - ((q90 - gaugeMin) / gaugeSpan) * 100));
+    const markerPct = Math.max(0, Math.min(100, ((dispVal - gaugeMin) / gaugeSpan) * 100));
+
+    els.gaugeBand.style.left = `${leftPct}%`;
+    els.gaugeBand.style.right = `${rightPct}%`;
+    els.gaugeMarker.style.left = `${markerPct}%`;
+
+    els.gaugeLabelP10.textContent = `P10: ${q10.toFixed(4)}`;
+    els.gaugeLabelBrnn.textContent = `Deterministic Point: ${dispVal.toFixed(4)} ${unitLabel}`;
+    els.gaugeLabelP90.textContent = `P90: ${q90.toFixed(4)}`;
+
+    // 6.5 Additional Engineering Metrics
     const isothermData = generateIsotherm(state.TOC, state.T, state.M, 60);
-    // Find closest slope metric to current P
     let closestSlope = 0;
     let minDiff = Infinity;
     isothermData.slopeMetrics.forEach(sm => {
@@ -370,8 +433,18 @@
     els.metricVol.textContent = `${pred.units.m3Ton.toFixed(4)} m³/ton`;
     els.metricYn.textContent = pred.normOutput.toFixed(4);
 
-    // 6.5 Update Isotherm Chart
+    // 6.6 Update Isotherm Chart with Uncertainty Ribbon
     if (state.chart) {
+      const p90Curve = isothermData.points.map(pt => ({
+        x: pt.p,
+        y: state.selectedUnit === 'scfTon' ? pt.p90Scf : pt.p90Cm3g
+      }));
+
+      const p10Curve = isothermData.points.map(pt => ({
+        x: pt.p,
+        y: state.selectedUnit === 'scfTon' ? pt.p10Scf : pt.p10Cm3g
+      }));
+
       const curveData = isothermData.points.map(pt => ({
         x: pt.p,
         y: state.selectedUnit === 'scfTon' ? pt.scfTon : pt.cm3g
@@ -380,23 +453,25 @@
       const opPoint = [
         {
           x: state.P,
-          y: state.selectedUnit === 'scfTon' ? pred.scfTon : pred.cm3g
+          y: dispVal
         }
       ];
 
-      state.chart.data.datasets[0].data = curveData;
-      state.chart.data.datasets[1].data = opPoint;
+      state.chart.data.datasets[0].data = p90Curve;
+      state.chart.data.datasets[1].data = p10Curve;
+      state.chart.data.datasets[2].data = curveData;
+      state.chart.data.datasets[3].data = opPoint;
       state.chart.options.scales.y.title.text = state.selectedUnit === 'scfTon' ? 'Adsorption (SCF/ton)' : 'Adsorption (cm³/g)';
       state.chart.update('none');
     }
 
-    // 6.6 Tornado Sensitivity
+    // 6.7 Tornado Sensitivity
     updateTornado();
 
-    // 6.7 Neuron Insights
+    // 6.8 Neuron Insights
     updateNeuronInsights(pred);
 
-    // 6.8 Domain Alerts
+    // 6.9 Domain Alerts
     updateDomainAlerts();
   }
 
@@ -568,7 +643,7 @@
 
     const lines = text.split('\n');
     const results = [];
-    results.push('P_MPa,TOC_pct,T_degC,M_pct,Adsorption_SCF_ton,Adsorption_cm3_g,Storage_Tier');
+    results.push('P_MPa,TOC_pct,T_degC,M_pct,Adsorption_SCF_ton,P10_SCF_ton,P50_SCF_ton,P90_SCF_ton,Adsorption_cm3_g,Storage_Tier');
 
     let processedCount = 0;
 
@@ -582,7 +657,8 @@
         const res = predict(p, toc, t, m);
         results.push(
           `${p.toFixed(2)},${toc.toFixed(2)},${t.toFixed(1)},${m.toFixed(2)},` +
-          `${res.scfTon.toFixed(6)},${res.cm3g.toFixed(6)},"${res.tier.tier}"`
+          `${res.scfTon.toFixed(6)},${res.quantiles.p10.scfTon.toFixed(6)},${res.quantiles.p50.scfTon.toFixed(6)},${res.quantiles.p90.scfTon.toFixed(6)},` +
+          `${res.cm3g.toFixed(6)},"${res.tier.tier}"`
         );
         processedCount++;
       }
@@ -660,6 +736,9 @@
         `Temperature: ${state.T.toFixed(1)} °C\n` +
         `Moisture: ${state.M.toFixed(2)} %\n` +
         `Predicted Capacity: ${pred.scfTon.toFixed(6)} SCF/ton (${pred.cm3g.toFixed(6)} cm³/g)\n` +
+        `P10 (Conservative): ${pred.quantiles.p10.scfTon.toFixed(6)} SCF/ton\n` +
+        `P50 (Median):       ${pred.quantiles.p50.scfTon.toFixed(6)} SCF/ton\n` +
+        `P90 (Optimistic):   ${pred.quantiles.p90.scfTon.toFixed(6)} SCF/ton\n` +
         `Adsorption Tier: ${pred.tier.tier}`;
 
       navigator.clipboard.writeText(text).then(() => {

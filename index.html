@@ -153,6 +153,71 @@
             </div>
           </div>
 
+          <!-- Predictive Quantiles / Uncertainty Envelope Card -->
+          <div class="card quantiles-card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-title">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  Predictive Quantiles & Uncertainty Envelope
+                </span>
+                <span class="card-subtitle">Residual quantiles for reserves assessment & probabilistic risk modeling</span>
+              </div>
+              <span class="quantiles-spread-tag mono" id="quantiles-spread-tag">Spread: 0.0859 SCF/ton</span>
+            </div>
+
+            <div class="quantiles-grid">
+              <div class="quantile-item quantile-p10">
+                <div class="quantile-header">
+                  <span class="quantile-tag mono">P10</span>
+                  <span class="quantile-desc">Conservative / Proven</span>
+                </div>
+                <div class="quantile-body">
+                  <span class="quantile-val mono" id="q-p10-val">0.0000</span>
+                  <span class="quantile-unit" id="q-p10-unit">SCF/ton</span>
+                </div>
+                <span class="quantile-offset mono">Offset: -0.052685</span>
+              </div>
+
+              <div class="quantile-item quantile-p50">
+                <div class="quantile-header">
+                  <span class="quantile-tag mono">P50</span>
+                  <span class="quantile-desc">Expected Median</span>
+                </div>
+                <div class="quantile-body">
+                  <span class="quantile-val mono" id="q-p50-val">0.0000</span>
+                  <span class="quantile-unit" id="q-p50-unit">SCF/ton</span>
+                </div>
+                <span class="quantile-offset mono">Offset: +0.000445</span>
+              </div>
+
+              <div class="quantile-item quantile-p90">
+                <div class="quantile-header">
+                  <span class="quantile-tag mono">P90</span>
+                  <span class="quantile-desc">Optimistic / Upside</span>
+                </div>
+                <div class="quantile-body">
+                  <span class="quantile-val mono" id="q-p90-val">0.0000</span>
+                  <span class="quantile-unit" id="q-p90-unit">SCF/ton</span>
+                </div>
+                <span class="quantile-offset mono">Offset: +0.033200</span>
+              </div>
+            </div>
+
+            <!-- Visual Credible Interval Gauge -->
+            <div class="quantiles-gauge-wrap">
+              <div class="gauge-labels">
+                <span class="mono" id="gauge-label-p10">P10: 0.0000</span>
+                <span class="mono" id="gauge-label-brnn">Mode A Point: 0.0000</span>
+                <span class="mono" id="gauge-label-p90">P90: 0.0000</span>
+              </div>
+              <div class="gauge-track">
+                <div class="gauge-band" id="gauge-band"></div>
+                <div class="gauge-marker" id="gauge-marker"></div>
+              </div>
+            </div>
+          </div>
+
           <!-- Interactive Adsorption Isotherm -->
           <div class="card">
             <div class="card-header">
@@ -161,6 +226,10 @@
                 <span class="card-subtitle">Pressure sweep $P \in [0.27, 27.86\text{ MPa}]$ at constant $(TOC, T, M)$</span>
               </div>
               <div class="chart-legend-wrap">
+                <div class="legend-item">
+                  <span class="legend-dot" style="background:rgba(0, 240, 255, 0.25); border: 1px dashed #00F0FF;"></span>
+                  <span>P10–P90 Uncertainty Envelope</span>
+                </div>
                 <div class="legend-item">
                   <span class="legend-dot" style="background:#00F0FF;"></span>
                   <span>BRNN Isotherm Curve</span>
@@ -337,6 +406,18 @@
             $$(\text{CH}_4\text{ adsorption})_n = \sum_{i=1}^{9} H_i - 3.3371$$
             $$\text{CH}_4\text{ adsorption} = 1.615 (\text{CH}_4\text{ adsorption})_n + 1.615$$
             $$(\text{CH}_4\text{ adsorption})_{\text{final}} = \max(0, \text{CH}_4\text{ adsorption})\quad [\text{SCF/ton}]$$
+          </div>
+        </div>
+
+        <div class="equation-block">
+          <div class="eq-title">4. Residual Quantiles & Predictive Uncertainty Quantification</div>
+          <p style="font-size:0.84rem; color:var(--text-muted); margin-bottom:0.85rem;">
+            Residual quantiles are added to the BRNN point predictions to establish probabilistic confidence bounds ($P_{10}, P_{50}, P_{90}$) with non-negative physical gating:
+          </p>
+          <div class="mono" style="line-height: 2.2;">
+            $$P_{10} = \max(0, \text{CH}_4\text{ adsorption}_{(BRNN)} - 0.052685)$$
+            $$P_{50} = \max(0, \text{CH}_4\text{ adsorption}_{(BRNN)} + 0.000445)$$
+            $$P_{90} = \max(0, \text{CH}_4\text{ adsorption}_{(BRNN)} + 0.0332)$$
           </div>
         </div>
       </div>

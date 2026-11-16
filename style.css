@@ -698,6 +698,165 @@ input[type="range"].param-slider::-moz-range-thumb {
   border-top: 1px solid var(--border-subtle);
 }
 
+/* ============================================================
+   PREDICTIVE QUANTILES & UNCERTAINTY ENVELOPE
+   ============================================================ */
+.quantiles-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.quantiles-spread-tag {
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 0.20rem 0.65rem;
+  border-radius: var(--radius-pill);
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+}
+
+.quantiles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+@media (max-width: 768px) {
+  .quantiles-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.quantile-item {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  transition: transform 0.16s ease, border-color 0.16s ease;
+}
+
+.quantile-item:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-1px);
+}
+
+.quantile-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+}
+
+.quantile-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.12rem 0.45rem;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.04em;
+}
+
+.quantile-p10 .quantile-tag {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38BDF8;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.quantile-p50 .quantile-tag {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.quantile-p90 .quantile-tag {
+  background: rgba(139, 92, 246, 0.15);
+  color: #A78BFA;
+  border: 1px solid rgba(139, 92, 246, 0.35);
+}
+
+.quantile-desc {
+  font-size: 0.70rem;
+  color: var(--text-muted);
+}
+
+.quantile-body {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+}
+
+.quantile-val {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+}
+
+.quantile-unit {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.quantile-offset {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+}
+
+/* Credible Interval Gauge */
+.quantiles-gauge-wrap {
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.gauge-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.70rem;
+  color: var(--text-muted);
+}
+
+.gauge-track {
+  height: 10px;
+  background: var(--bg-input);
+  border-radius: var(--radius-pill);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.gauge-band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 20%;
+  right: 20%;
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.35), rgba(16, 185, 129, 0.45), rgba(139, 92, 246, 0.35));
+  border-radius: var(--radius-pill);
+  transition: all 0.2s ease;
+}
+
+.gauge-marker {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 4px;
+  background: #FFFFFF;
+  border-radius: 2px;
+  left: 50%;
+  box-shadow: 0 0 8px #00F0FF;
+  transform: translateX(-50%);
+  transition: left 0.2s ease;
+}
+
 .metric-item {
   display: flex;
   flex-direction: column;
