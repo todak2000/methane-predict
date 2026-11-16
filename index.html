@@ -32,7 +32,7 @@
         <div class="brand-text">
           <div class="brand-title">
             <span>CH4 Predict</span>
-            <span class="brand-version">Mode A • BRNN</span>
+            <span class="brand-version">Explicit BRNN</span>
           </div>
           <span class="brand-sub">Methane Adsorption in Gas Shale Intelligence</span>
         </div>
@@ -147,7 +147,7 @@
                 <span class="metric-value mono" id="metric-vol">—</span>
               </div>
               <div class="metric-item">
-                <span class="metric-label">Mode A Normalized Sum ($Y_n$)</span>
+                <span class="metric-label">Normalized Output Sum ($Y_n$)</span>
                 <span class="metric-value mono" id="metric-yn">—</span>
               </div>
             </div>
@@ -208,7 +208,7 @@
             <div class="quantiles-gauge-wrap">
               <div class="gauge-labels">
                 <span class="mono" id="gauge-label-p10">P10: 0.0000</span>
-                <span class="mono" id="gauge-label-brnn">Mode A Point: 0.0000</span>
+                <span class="mono" id="gauge-label-brnn">Deterministic: 0.0000</span>
                 <span class="mono" id="gauge-label-p90">P90: 0.0000</span>
               </div>
               <div class="gauge-track">
@@ -292,7 +292,7 @@
         <div class="card-header">
           <div class="card-title-group">
             <span class="card-title">Dr. Okorie Table 3 Test Dataset Benchmark</span>
-            <span class="card-subtitle">Direct line-by-line comparison between Mode A explicit formula and document predictions</span>
+            <span class="card-subtitle">Direct line-by-line comparison between explicit model and document predictions</span>
           </div>
           <span class="delta-pill mono">Constant Offset $\Delta \approx +0.319956\text{ SCF/ton}$</span>
         </div>
@@ -310,7 +310,7 @@
                 <th>TOC (%)</th>
                 <th>T (°C)</th>
                 <th>M (%)</th>
-                <th>Mode A Calculated</th>
+                <th>Model Calculated</th>
                 <th>Table 3 BRNN</th>
                 <th>Offset ($\Delta$)</th>
                 <th>Action</th>
@@ -367,7 +367,7 @@
       <div class="card">
         <div class="card-header">
           <div class="card-title-group">
-            <span class="card-title">Explicit Mathematical Formulation (Mode A)</span>
+            <span class="card-title">Explicit Mathematical Formulation</span>
             <span class="card-subtitle">Complete algebraic specification for Methane Adsorption in Shale Calculator</span>
           </div>
         </div>
@@ -401,7 +401,7 @@
         </div>
 
         <div class="equation-block">
-          <div class="eq-title">3. Output Layer, Mode A Denormalization & Non-Negative Gate</div>
+          <div class="eq-title">3. Output Layer, Denormalization & Non-Negative Gate</div>
           <div class="mono" style="line-height: 2.2;">
             $$(\text{CH}_4\text{ adsorption})_n = \sum_{i=1}^{9} H_i - 3.3371$$
             $$\text{CH}_4\text{ adsorption} = 1.615 (\text{CH}_4\text{ adsorption})_n + 1.615$$
@@ -429,7 +429,7 @@
   <footer>
     <div class="footer-inner">
       <div>CH4 Predict — Dr. Okorie Explicit Artificial Neural Network Correlation</div>
-      <div class="mono" style="font-size:0.72rem;">Mode A • Precision Verified • $R^2 = 0.9999999985$</div>
+      <div class="mono" style="font-size:0.72rem;">Precision Verified • $R^2 = 0.9999999985$</div>
     </div>
   </footer>
 

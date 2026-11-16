@@ -3,7 +3,7 @@
 /**
  * Methane Adsorption in Gas Shale Reservoir Calculator
  * Explicit Bayesian Regularized Neural Network (BRNN) Model (Dr. Okorie)
- * Architecture: 4 Inputs -> 9 Hidden Neurons (tanh) -> 1 Output (Mode A)
+ * Architecture: 4 Inputs -> 9 Hidden Neurons (tanh) -> 1 Output
  */
 
 // Model Parameters and Input Bounds
@@ -75,7 +75,7 @@ const NEURONS = [
   { id: 9, s:  0.3444, b:  3.8238, w: [ 0.528816,  0.545323,  1.302212,  4.240496] }
 ];
 
-// Mode A Normalization Constants (Given Explicit Formula)
+// Model Denormalization Constants (Explicit Formula)
 const OUTPUT_BIAS_NORM = -3.3371;
 const DENORM_SLOPE     =  1.6150;
 const DENORM_INTERCEPT =  1.6150;
@@ -187,7 +187,7 @@ function getAdsorptionTier(scfTon) {
 }
 
 /**
- * Core Neural Network Computation (Mode A Formula verbatim)
+ * Core Neural Network Computation (Explicit Formula verbatim)
  */
 function predictCore(P, TOC, T, M) {
   // Input normalization
@@ -223,7 +223,7 @@ function predictCore(P, TOC, T, M) {
     });
   }
 
-  // Normalized output sum (Mode A)
+  // Normalized output sum
   const normOutput = sumH + OUTPUT_BIAS_NORM;
 
   // Denormalization

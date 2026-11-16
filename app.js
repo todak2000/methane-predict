@@ -693,7 +693,7 @@
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `CH4_Adsorption_Batch_ModeA_${Date.now()}.csv`);
+    link.setAttribute('download', `CH4_Adsorption_Batch_${Date.now()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -730,7 +730,7 @@
     els.copyBtn.addEventListener('click', () => {
       const pred = predict(state.P, state.TOC, state.T, state.M);
       const text =
-        `CH4 Adsorption Prediction (Mode A):\n` +
+        `CH4 Adsorption Prediction:\n` +
         `Pressure: ${state.P.toFixed(2)} MPa\n` +
         `TOC: ${state.TOC.toFixed(2)} %\n` +
         `Temperature: ${state.T.toFixed(1)} °C\n` +

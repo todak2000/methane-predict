@@ -3,7 +3,7 @@
 const assert = require('assert');
 const engine = require('./engine.js');
 
-console.log('--- RUNNING ENGINE UNIT TESTS (MODE A) ---');
+console.log('--- RUNNING ENGINE UNIT TESTS ---');
 
 // Test 1: Normalization
 assert.strictEqual(engine.normalizeInput(0.27, 0.27, 27.59), -1.0, 'P min should normalize to -1.0');
@@ -12,11 +12,11 @@ assert.strictEqual(engine.normalizeInput(25.0, 25.0, 60.0), -1.0, 'T min should 
 assert.strictEqual(engine.normalizeInput(85.0, 25.0, 60.0), 1.0, 'T max should normalize to 1.0');
 console.log('✓ Normalization checks passed');
 
-// Test 2: Mode A Prediction for Row 1
+// Test 2: Prediction for Row 1
 // P=0.43, TOC=1.11, T=70, M=1.24
 const row1 = engine.predict(0.43, 1.11, 70.0, 1.24);
-console.log('Row 1 Mode A prediction:', row1.scfTon.toFixed(8), 'SCF/ton');
-assert(Math.abs(row1.scfTon - 0.35725314) < 1e-6, 'Row 1 Mode A calculation matches explicit formula');
+console.log('Row 1 prediction:', row1.scfTon.toFixed(8), 'SCF/ton');
+assert(Math.abs(row1.scfTon - 0.35725314) < 1e-6, 'Row 1 calculation matches explicit formula');
 assert(row1.neuronDetails.length === 9, 'All 9 hidden neurons evaluated');
 
 // Test 2B: Predictive Quantiles (P10, P50, P90)
@@ -30,7 +30,7 @@ assert(Math.abs(q.p50.scfTon - expectedP50) < 1e-6, 'P50 calculation matches for
 assert(Math.abs(q.p90.scfTon - expectedP90) < 1e-6, 'P90 calculation matches formula');
 assert(q.p10.scfTon <= q.p50.scfTon && q.p50.scfTon <= q.p90.scfTon, 'Ordering condition P10 <= P50 <= P90 holds');
 console.log(`✓ Quantiles verified: P10=${q.p10.scfTon.toFixed(5)}, P50=${q.p50.scfTon.toFixed(5)}, P90=${q.p90.scfTon.toFixed(5)}`);
-console.log('✓ Mode A explicit formula prediction verified');
+console.log('✓ Explicit formula prediction verified');
 
 // Test 3: Non-Negative Gate
 // Extreme synthetic inputs that would drive raw linear sum negative
@@ -63,8 +63,8 @@ engine.PRESETS.forEach(preset => {
 console.log('✓ All 6 geological presets verified');
 
 // Test 7: Table 3 Data Evaluation
-console.log('\n--- VALIDATION BENCHMARK EVALUATION (MODE A) ---');
-console.log('Row | P (MPa) | TOC (%) | T (°C) | M (%) | Mode A (Calc) | Table 3 BRNN | Delta');
+console.log('\n--- VALIDATION BENCHMARK EVALUATION ---');
+console.log('Row | P (MPa) | TOC (%) | T (°C) | M (%) | Model (Calc) | Table 3 BRNN | Delta');
 engine.VALIDATION_DATA.forEach(row => {
   const res = engine.predict(row.P, row.TOC, row.T, row.M);
   const delta = res.scfTon - row.brnnPaper;

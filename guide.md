@@ -3,7 +3,7 @@
 **Application:** Methane Adsorption in Gas Shale Intelligence  
 **Model:** Explicit Bayesian Regularized Neural Network (BRNN) with 4 inputs, 9 hidden neurons ($\tanh$), 1 output  
 **Source Document:** *Methane Adsorption in Shale Calculator* — Dr. Okorie  
-**Operational Formulation:** Mode A (Published Explicit Formula)
+**Model Formulation:** Explicit BRNN Formulation
 
 ---
 
@@ -35,7 +35,7 @@ Then navigate to: `http://localhost:8000`
 
 ---
 
-## 3. Mode A Explicit Mathematical Formulation
+## 3. Explicit Mathematical Formulation
 
 ### 3.1 Normalization
 Each variable $X$ is scaled into the range $[-1, 1]$:
@@ -55,7 +55,7 @@ $$H_7 = -2.4732 \tanh(0.726167 P_n + 5.44991 TOC_n - 3.53879 T_n + 2.364884 M_n 
 $$H_8 = 4.5911 \tanh(0.593457 P_n - 3.93835 TOC_n + 4.100349 T_n + 6.917117 M_n + 0.8407)$$
 $$H_9 = 0.3444 \tanh(0.528816 P_n + 0.545323 TOC_n + 1.302212 T_n + 4.240496 M_n + 3.8238)$$
 
-### 3.3 Output Summation, Mode A Denormalization & Non-Negative Gating
+### 3.3 Output Summation, Denormalization & Non-Negative Gating
 $$(\text{CH}_4\text{ adsorption})_n = \sum_{i=1}^{9} H_i - 3.3371$$
 $$\text{CH}_4\text{ adsorption} = 1.615 (\text{CH}_4\text{ adsorption})_n + 1.615$$
 $$(\text{CH}_4\text{ adsorption})_{\text{final}} = \max(0, \text{CH}_4\text{ adsorption})\quad [\text{SCF/ton}]$$
