@@ -80,3 +80,4 @@ $$(\text{CH}_4\text{ adsorption})_{\text{final}} = \max(0, \text{CH}_4\text{ ads
    - Process multiple core samples simultaneously with instant CSV export.
 7. **Accessibility & Design**:
    - AAA minimalist aesthetic, Dark & Light themes, KaTeX equations, keyboard shortcuts (`1-5` for tabs, `R` for reset, `T` for theme).
+
