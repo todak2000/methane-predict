@@ -16,7 +16,7 @@ console.log('✓ Normalization checks passed');
 // P=0.43, TOC=1.11, T=70, M=1.24
 const row1 = engine.predict(0.43, 1.11, 70.0, 1.24);
 console.log('Row 1 prediction:', row1.scfTon.toFixed(8), 'SCF/ton (Expected ~0.037287)');
-assert(Math.abs(row1.scfTon - 0.03732164) < 1e-6, 'Row 1 calculation matches explicit formula with b2 = -3.5352');
+assert(Math.abs(row1.scfTon - 0.03732164) < 1e-6, 'Row 1 calculation matches explicit formula');
 assert(Math.abs(row1.scfTon - 0.037287181) < 0.00005, 'Row 1 matches Table 3 to within 0.00005 SCF/ton');
 assert(row1.neuronDetails.length === 9, 'All 9 hidden neurons evaluated');
 

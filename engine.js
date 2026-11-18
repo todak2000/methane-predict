@@ -75,7 +75,7 @@ const NEURONS = [
   { id: 9, s:  0.3444, b:  3.8238, w: [ 0.528816,  0.545323,  1.302212,  4.240496] }
 ];
 
-// Model Denormalization Constants (Explicit Formula — Corrected b2 = -3.5352)
+// Model Denormalization Constants (Explicit Formula)
 const OUTPUT_BIAS_NORM = -3.5352;
 const DENORM_SLOPE     =  1.6150;
 const DENORM_INTERCEPT =  1.6150;
