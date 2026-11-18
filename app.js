@@ -576,7 +576,7 @@
         <td class="mono">${row.M.toFixed(2)}</td>
         <td class="mono" style="font-weight:600; color:var(--accent);">${calc.scfTon.toFixed(6)}</td>
         <td class="mono" style="color:var(--text-muted);">${row.brnnPaper.toFixed(6)}</td>
-        <td><span class="delta-pill mono">+${delta.toFixed(6)}</span></td>
+        <td><span class="delta-pill mono">${(delta >= 0 ? '+' : '') + delta.toFixed(6)}</span></td>
         <td>
           <button class="action-btn-sm" data-load-row="${row.row}">Load</button>
         </td>

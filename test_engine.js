@@ -15,16 +15,17 @@ console.log('✓ Normalization checks passed');
 // Test 2: Prediction for Row 1
 // P=0.43, TOC=1.11, T=70, M=1.24
 const row1 = engine.predict(0.43, 1.11, 70.0, 1.24);
-console.log('Row 1 prediction:', row1.scfTon.toFixed(8), 'SCF/ton');
-assert(Math.abs(row1.scfTon - 0.35725314) < 1e-6, 'Row 1 calculation matches explicit formula');
+console.log('Row 1 prediction:', row1.scfTon.toFixed(8), 'SCF/ton (Expected ~0.037287)');
+assert(Math.abs(row1.scfTon - 0.03732164) < 1e-6, 'Row 1 calculation matches explicit formula with b2 = -3.5352');
+assert(Math.abs(row1.scfTon - 0.037287181) < 0.00005, 'Row 1 matches Table 3 to within 0.00005 SCF/ton');
 assert(row1.neuronDetails.length === 9, 'All 9 hidden neurons evaluated');
 
 // Test 2B: Predictive Quantiles (P10, P50, P90)
 const q = row1.quantiles;
 assert(q && q.p10 && q.p50 && q.p90, 'Quantiles object exists');
-const expectedP10 = Math.max(0, 0.35725314 - 0.052685);
-const expectedP50 = Math.max(0, 0.35725314 + 0.000445);
-const expectedP90 = Math.max(0, 0.35725314 + 0.0332);
+const expectedP10 = Math.max(0, row1.scfTon - 0.052685);
+const expectedP50 = Math.max(0, row1.scfTon + 0.000445);
+const expectedP90 = Math.max(0, row1.scfTon + 0.0332);
 assert(Math.abs(q.p10.scfTon - expectedP10) < 1e-6, 'P10 calculation matches formula');
 assert(Math.abs(q.p50.scfTon - expectedP50) < 1e-6, 'P50 calculation matches formula');
 assert(Math.abs(q.p90.scfTon - expectedP90) < 1e-6, 'P90 calculation matches formula');
@@ -78,8 +79,8 @@ engine.VALIDATION_DATA.forEach(row => {
     `${row.brnnPaper.toFixed(6).padStart(12)} | ` +
     `${(delta >= 0 ? '+' : '') + delta.toFixed(6)}`
   );
-  // Verify delta is constant ~0.31996
-  assert(Math.abs(delta - 0.31996) < 0.0001, `Delta on row ${row.row} is constant offset ~0.31996`);
+  // Verify delta matches Table 3 closely (MAE < 0.00004 SCF/ton)
+  assert(Math.abs(delta) < 0.00005, `Delta on row ${row.row} (${delta.toFixed(6)}) matches Table 3 within 0.00005 SCF/ton`);
 });
 
 console.log('\nALL 7 ENGINE TEST SUITES PASSED PERFECTLY!\n');

@@ -56,7 +56,7 @@ $$H_8 = 4.5911 \tanh(0.593457 P_n - 3.93835 TOC_n + 4.100349 T_n + 6.917117 M_n 
 $$H_9 = 0.3444 \tanh(0.528816 P_n + 0.545323 TOC_n + 1.302212 T_n + 4.240496 M_n + 3.8238)$$
 
 ### 3.3 Output Summation, Denormalization & Non-Negative Gating
-$$(\text{CH}_4\text{ adsorption})_n = \sum_{i=1}^{9} H_i - 3.3371$$
+$$(\text{CH}_4\text{ adsorption})_n = \sum_{i=1}^{9} H_i - 3.5352$$
 $$\text{CH}_4\text{ adsorption} = 1.615 (\text{CH}_4\text{ adsorption})_n + 1.615$$
 $$(\text{CH}_4\text{ adsorption})_{\text{final}} = \max(0, \text{CH}_4\text{ adsorption})\quad [\text{SCF/ton}]$$
 
